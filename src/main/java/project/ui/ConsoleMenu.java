@@ -23,7 +23,7 @@ public class ConsoleMenu {
             String choice = input.nextLine();
 
             switch (choice) {
-                case "1" -> IO.println("Not implemented yet");
+                case "1" -> login();
                 case "2" -> register();
                 case "0" -> running = false;
                 default -> IO.println("Invalid choice");
@@ -42,6 +42,22 @@ public class ConsoleMenu {
 
         if (success) {
             IO.println("User registered successfully");
+        } else {
+            IO.println("Username or Password is incorrect");
+        }
+    }
+
+    private void login(){
+        IO.println("Enter your username: ");
+        String username = input.nextLine();
+
+        IO.println("Enter your password: ");
+        String password = input.nextLine();
+
+        boolean success = service.login(username, password);
+
+        if (success) {
+            IO.println("Login successful");
         } else {
             IO.println("Username or Password is incorrect");
         }

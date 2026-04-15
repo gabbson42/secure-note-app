@@ -1,9 +1,11 @@
 package project.repository;
 
 import project.config.DatabaseConnection;
+import project.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserRepository {
@@ -30,18 +32,29 @@ public class UserRepository {
         }
     }
 
-    public boolean getUser(String username, String password) {
-        String sql = "SELECT username, password from users where username='?' and password = '?'";
+    public User getUser(String username) {
+        String sql = "SELECT * FROM users WHERE username = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, username);
-            statement.setString(2, password);
+
+            ResultSet result = statement.executeQuery();
+
+
+            if (result.next()) {
+                int id = result.getInt("id");
+                String password = result.getString("password");
+                String role = result.getString("role");
+                return new User(id,username,password,role);
+            } else {
+                return null;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 }
