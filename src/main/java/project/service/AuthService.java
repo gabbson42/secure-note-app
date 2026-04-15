@@ -21,19 +21,24 @@ public class AuthService {
         return repository.saveUser(username, hashPassword(password), "USER");
     }
 
-    public boolean login(String username, String password){
+    public User login(String username, String password){
         if (username == null || username.isBlank()) {
             IO.println("Username is empty");
-            return false;
+            return null;
         }
         if (password == null || password.isBlank()) {
             IO.println("Password is empty");
-            return false;
+            return null;
         }
 
         User user = repository.getUser(username);
 
-        return checkPassword(password, user.getPassword());
+        if (checkPassword(password, user.getPassword())) {
+            return user;
+        } else {
+            return null;
+        }
+
     }
 
     private String hashPassword(String password) {
