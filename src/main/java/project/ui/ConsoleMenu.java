@@ -45,7 +45,7 @@ public class ConsoleMenu {
         if (success) {
             IO.println("User registered successfully");
         } else {
-            IO.println("Username or Password is incorrect");
+            IO.println("Username already exists, login or try registering with another username");
         }
     }
 
@@ -98,6 +98,28 @@ public class ConsoleMenu {
     }
 
     private void changePassword(){
-        IO.println("Not functional at the moment");
+        boolean running = true;
+
+        while (running) {
+            IO.println("Input your old password:");
+            String oldPassword = input.nextLine();
+
+            IO.println("Input your new password:");
+            String newPassword = input.nextLine();
+
+            IO.println("Input your new password again to confirm:");
+            String newPasswordValidation = input.nextLine();
+
+            if (newPassword.equals(newPasswordValidation)) {
+                if (service.changePassword(oldPassword,newPassword)) {
+                    IO.println("Password changed successfully");
+                    running = false;
+                } else {
+                    IO.println("The old password was incorrect, try again.");
+                }
+            } else {
+                IO.println("The new password didn't match, try again");
+            }
+        }
     }
 }
