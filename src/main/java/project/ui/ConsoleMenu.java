@@ -1,9 +1,11 @@
 package project.ui;
 
+import project.model.Note;
 import project.model.User;
 import project.service.AuthService;
 import project.service.UserService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleMenu {
@@ -18,11 +20,12 @@ public class ConsoleMenu {
 
         while (running) {
             IO.println("""
-                    ----Secure Note----
+                    Welcome to Secure Notes!
+                    ------------------------
                     1. Login
                     2. Register user
                     0. Quit
-                    """);
+                    ------------------------""");
 
             String choice = input.nextLine();
 
@@ -61,23 +64,34 @@ public class ConsoleMenu {
         currentUser = authService.login(username, password);
 
         if (currentUser != null) {
-            IO.println("Login successful");
-            userMenu();
+            IO.println("Login successful!");
+            if (currentUser.getRole().equalsIgnoreCase("ADMIN")){
+                adminMenu();
+            } else {
+                userMenu();
+            }
         } else {
             IO.println("Username or Password is incorrect");
         }
     }
 
+    private void adminMenu(){
+        IO.println("Not functional at the moment");
+    }
+
     private void userMenu() {
+        clearConsole();
         boolean running = true;
 
         while (running) {
             IO.println("""
+                          Secure Notes
+                    -----------------------
                     1. Create note
                     2. View notes
                     3. Change password
                     0. Log out
-                    """);
+                    -----------------------""");
 
             String choice = input.nextLine();
 
@@ -100,13 +114,28 @@ public class ConsoleMenu {
 
         if (userService.saveNote(title, noteContent, currentUser.getId())) {
             IO.println("Note created successfully");
+            currentUser.addNote(title, noteContent);
         } else {
             IO.println("Something went wrong, try again");
         }
     }
 
     private void viewNotes() {
-        IO.println("Not functional at the moment");
+        clearConsole();
+        List<Note> notes = currentUser.getNotes();
+        IO.println("""
+                Your notes
+                ----------""");
+        int i = 1;
+        for(Note note : notes) {
+            IO.println(i + ". " + note.getTitle());
+            i++;
+        }
+        int choice = Integer.parseInt(input.nextLine());
+
+        IO.println(notes.get(choice-1).getTitle());
+        IO.println("---------");
+        IO.println(notes.get(choice-1).getContent());
     }
 
     private void changePassword() {
@@ -132,6 +161,12 @@ public class ConsoleMenu {
             } else {
                 IO.println("The new password didn't match, try again");
             }
+        }
+    }
+
+    private void clearConsole() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println();
         }
     }
 }

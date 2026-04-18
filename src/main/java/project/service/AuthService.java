@@ -31,23 +31,31 @@ public class AuthService {
             return null;
         }
 
-        User user = repository.getUser(username);
+        if (repository.checkIfUserExists(username)) {
+            User user = repository.getUser(username);
 
-        if (checkPassword(password, user.getPassword())) {
-            return user;
+            if (checkPassword(password, user.getPassword())) {
+                return user;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
-
     }
 
     public boolean changePassword(User user, String oldPassword, String newPassword) {
-        if (checkPassword(oldPassword, user.getPassword())) {
-            user.setPassword(hashPassword(newPassword));
-            return repository.updatePassword(user.getUsername(), hashPassword(newPassword));
-        } else {
+        if (!checkPassword(oldPassword, user.getPassword())) {
             return false;
         }
+
+        String newHashedPassword = hashPassword(newPassword);
+        boolean updatedPassword = repository.updatePassword(user.getUsername(), newHashedPassword);
+
+        if (updatedPassword) {
+            user.setPassword(newHashedPassword);
+        }
+        return updatedPassword;
     }
 
     private String hashPassword(String password) {

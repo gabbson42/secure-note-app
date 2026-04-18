@@ -1,17 +1,21 @@
 package project.model;
 
+import java.util.List;
+
 public class User {
 
     private int id;
     private String username;
     private String password;
     private String role;
+    private List<Note> notes;
 
-    public User(int id, String username, String password, String role){
+    public User(int id, String username, String password, String role, List<Note> notes) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.notes = notes;
     }
 
     public int getId() {
@@ -44,5 +48,14 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void addNote(String title, String content) {
+        Note note = new Note(title, content);
+        this.notes.add(note);
     }
 }

@@ -1,12 +1,14 @@
 package project.repository;
 
 import project.config.DatabaseConnection;
+import project.model.Note;
 import project.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.*;
 
 public class UserRepository {
 
@@ -36,6 +38,23 @@ public class UserRepository {
         }
     }
 
+    public boolean checkIfUserExists(String username) {
+        String sql = "SELECT * FROM users WHERE username = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, username);
+            ResultSet result = statement.executeQuery();
+
+            return result.next();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public User getUser(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
@@ -43,15 +62,14 @@ public class UserRepository {
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, username);
-
             ResultSet result = statement.executeQuery();
-
 
             if (result.next()) {
                 int id = result.getInt("id");
                 String password = result.getString("password");
                 String role = result.getString("role");
-                return new User(id, username, password, role);
+                List<Note> notes = getUserNotes(id);
+                return new User(id, username, password, role, notes);
             } else {
                 return null;
             }
@@ -60,6 +78,33 @@ public class UserRepository {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private List<Note> getUserNotes(int id) {
+        String sql = "SELECT * FROM notes WHERE user_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            ResultSet result = statement.executeQuery();
+
+            List<Note> noteList = new ArrayList<>();
+
+            while (result.next()) {
+                String title = result.getString("title");
+                String content = result.getString("content");
+                Note note = new Note(title, content);
+                noteList.add(note);
+            }
+
+            return noteList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
     public boolean updatePassword(String username, String password) {
@@ -99,23 +144,5 @@ public class UserRepository {
             e.printStackTrace();
             return false;
         }
-    }
-
-    private boolean checkIfUserExists(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
-
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-
-            statement.setString(1, username);
-            ResultSet result = statement.executeQuery();
-
-            return result.next();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-
     }
 }
