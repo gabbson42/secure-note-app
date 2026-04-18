@@ -2,13 +2,15 @@ package project.ui;
 
 import project.model.User;
 import project.service.AuthService;
+import project.service.UserService;
 
 import java.util.Scanner;
 
 public class ConsoleMenu {
 
     private final Scanner input = new Scanner(System.in);
-    private final AuthService service = new AuthService();
+    private final AuthService authService = new AuthService();
+    private final UserService userService = new UserService();
     private User currentUser;
 
     public void start() {
@@ -40,7 +42,7 @@ public class ConsoleMenu {
         IO.println("Enter your password: ");
         String password = input.nextLine();
 
-        boolean success = service.register(username, password);
+        boolean success = authService.register(username, password);
 
         if (success) {
             IO.println("User registered successfully");
@@ -49,14 +51,14 @@ public class ConsoleMenu {
         }
     }
 
-    private void login(){
+    private void login() {
         IO.println("Enter your username: ");
         String username = input.nextLine();
 
         IO.println("Enter your password: ");
         String password = input.nextLine();
 
-        currentUser = service.login(username, password);
+        currentUser = authService.login(username, password);
 
         if (currentUser != null) {
             IO.println("Login successful");
@@ -66,10 +68,10 @@ public class ConsoleMenu {
         }
     }
 
-    private void userMenu(){
+    private void userMenu() {
         boolean running = true;
 
-        while(running) {
+        while (running) {
             IO.println("""
                     1. Create note
                     2. View notes
@@ -89,15 +91,25 @@ public class ConsoleMenu {
         }
     }
 
-    private void createNote(){
+    private void createNote() {
+        IO.println("Input the title of the note:");
+        String title = input.nextLine();
+
+        IO.println("Input your note content and press enter to save");
+        String noteContent = input.nextLine();
+
+        if (userService.saveNote(title, noteContent, currentUser.getId())) {
+            IO.println("Note created successfully");
+        } else {
+            IO.println("Something went wrong, try again");
+        }
+    }
+
+    private void viewNotes() {
         IO.println("Not functional at the moment");
     }
 
-    private void viewNotes(){
-        IO.println("Not functional at the moment");
-    }
-
-    private void changePassword(){
+    private void changePassword() {
         boolean running = true;
 
         while (running) {
@@ -111,7 +123,7 @@ public class ConsoleMenu {
             String newPasswordValidation = input.nextLine();
 
             if (newPassword.equals(newPasswordValidation)) {
-                if (service.changePassword(oldPassword,newPassword)) {
+                if (authService.changePassword(currentUser, oldPassword, newPassword)) {
                     IO.println("Password changed successfully");
                     running = false;
                 } else {

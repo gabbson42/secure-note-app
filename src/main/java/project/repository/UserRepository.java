@@ -81,7 +81,27 @@ public class UserRepository {
         }
     }
 
-    public boolean checkIfUserExists(String username) {
+    public boolean saveNoteToDb(String title, String noteContent, int userId) {
+        String sql = "INSERT INTO notes (title, content, user_id) VALUES (?,?,?);";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, title);
+            statement.setString(2, noteContent);
+            statement.setInt(3, userId);
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean checkIfUserExists(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();

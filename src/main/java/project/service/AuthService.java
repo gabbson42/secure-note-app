@@ -7,7 +7,6 @@ import project.repository.UserRepository;
 public class AuthService {
 
     private final UserRepository repository = new UserRepository();
-    private User user;
 
     public boolean register(String username, String password) {
         if (username == null || username.isBlank()) {
@@ -32,7 +31,7 @@ public class AuthService {
             return null;
         }
 
-        user = repository.getUser(username);
+        User user = repository.getUser(username);
 
         if (checkPassword(password, user.getPassword())) {
             return user;
@@ -42,7 +41,7 @@ public class AuthService {
 
     }
 
-    public boolean changePassword(String oldPassword, String newPassword) {
+    public boolean changePassword(User user, String oldPassword, String newPassword) {
         if (checkPassword(oldPassword, user.getPassword())) {
             user.setPassword(hashPassword(newPassword));
             return repository.updatePassword(user.getUsername(), hashPassword(newPassword));
