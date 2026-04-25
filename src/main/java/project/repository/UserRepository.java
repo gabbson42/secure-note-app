@@ -92,9 +92,10 @@ public class UserRepository {
             List<Note> noteList = new ArrayList<>();
 
             while (result.next()) {
+                int noteId = result.getInt("id");
                 String title = result.getString("title");
                 String content = result.getString("content");
-                Note note = new Note(title, content);
+                Note note = new Note(title, content, noteId);
                 noteList.add(note);
             }
 
@@ -135,6 +136,44 @@ public class UserRepository {
             statement.setString(1, title);
             statement.setString(2, noteContent);
             statement.setInt(3, userId);
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean saveEditedNote(String title, String content, int noteId) {
+        String sql = "UPDATE notes SET title = ?, content = ? where id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, title);
+            statement.setString(2, content);
+            statement.setInt(3, noteId);
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteNoteFromDb(int noteId) {
+        String sql = "DELETE FROM notes WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, noteId);
 
             int rows = statement.executeUpdate();
 

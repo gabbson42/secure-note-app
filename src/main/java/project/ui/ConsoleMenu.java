@@ -65,7 +65,7 @@ public class ConsoleMenu {
 
         if (currentUser != null) {
             IO.println("Login successful!");
-            if (currentUser.getRole().equalsIgnoreCase("ADMIN")){
+            if (currentUser.getRole().equalsIgnoreCase("ADMIN")) {
                 adminMenu();
             } else {
                 userMenu();
@@ -75,7 +75,7 @@ public class ConsoleMenu {
         }
     }
 
-    private void adminMenu(){
+    private void adminMenu() {
         IO.println("Not functional at the moment");
     }
 
@@ -114,7 +114,7 @@ public class ConsoleMenu {
 
         if (userService.saveNote(title, noteContent, currentUser.getId())) {
             IO.println("Note created successfully");
-            currentUser.addNote(title, noteContent);
+            currentUser = userService.updateCurrentUser(currentUser.getUsername());
         } else {
             IO.println("Something went wrong, try again");
         }
@@ -127,17 +127,111 @@ public class ConsoleMenu {
                 Your notes
                 ----------""");
         int i = 1;
-        for(Note note : notes) {
+        for (Note note : notes) {
             IO.println(i + ". " + note.getTitle());
             i++;
         }
-        int choice = Integer.parseInt(input.nextLine());
 
-        IO.println(notes.get(choice-1).getTitle());
-        IO.println("---------");
-        IO.println(notes.get(choice-1).getContent());
+        String choice = input.nextLine();
+        int noteIndex = Integer.parseInt(choice);
+        int noteId = notes.get(noteIndex - 1).getId();
+        String noteTitle = notes.get(noteIndex - 1).getTitle();
+        String noteContent = notes.get(noteIndex - 1).getContent();
+
+        boolean running = true;
+
+        while (running) {
+
+            IO.println(noteTitle);
+            IO.println("---------");
+            IO.println(noteContent);
+            IO.println("---------");
+            IO.println("1. Edit note, 2. Delete note, 0. Return");
+
+            choice = input.nextLine();
+
+            switch (choice) {
+                case "1" -> {
+                    if (editNote(noteTitle, noteContent, noteId)) {
+                        IO.println("Changes saved successfully!");
+                        currentUser = userService.updateCurrentUser(currentUser.getUsername());
+                        running = false;
+                    } else {
+                        IO.println("An unexpected error occurred");
+                    }
+                }
+                case "2" -> {
+                    if(deleteNote(noteId)) {
+                        IO.println("Note successfully deleted");
+                        currentUser = userService.updateCurrentUser(currentUser.getUsername());
+                        running = false;
+                    } else {
+                        IO.println("Note was not deleted");
+                    }
+                }
+                case "0" -> running = false;
+                default -> IO.println("Invalid choice, try again");
+
+            }
+        }
     }
 
+    public boolean editNote(String title, String noteContent, int noteId) {
+        boolean running = true;
+
+        String newTitle = title;
+        String newNoteContent = noteContent;
+
+        while (running) {
+            IO.println("""
+                    What would you like to edit?
+                    1. Content
+                    2. Title
+                    3. Both""");
+
+            String choice = input.nextLine();
+
+            switch (choice) {
+                case "1" -> {
+                    IO.println("Input new content of note and press enter to save:");
+                    newNoteContent = input.nextLine();
+                    running = false;
+                }
+                case "2" -> {
+                    IO.println("Input new title of note and press enter to save:");
+                    newTitle = input.nextLine();
+                    running = false;
+                }
+                case "3" -> {
+                    IO.println("Input new title of note:");
+                    newTitle = input.nextLine();
+                    IO.println("Input new content of note and press enter to save:");
+                    newNoteContent = input.nextLine();
+                    running = false;
+                }
+                default -> IO.println("Invalid input, try again.");
+            }
+        }
+        return userService.editNote(newTitle, newNoteContent, noteId);
+    }
+
+    public boolean deleteNote(int noteId) {
+        boolean running = true;
+
+        while (running) {
+            IO.println("Are you sure you want to delete the note? (Y/N) ");
+            String choice = input.nextLine();
+
+            if (choice.equalsIgnoreCase("Y")) {
+                running = false;
+            } else if (choice.equalsIgnoreCase("N")) {
+                return false;
+            } else {
+                IO.println("Invalid input, try again");
+            }
+        }
+        return userService.deleteNote(noteId);
+    }
     private void changePassword() {
         boolean running = true;
 
