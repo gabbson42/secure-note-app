@@ -54,8 +54,7 @@ public class User {
         return notes;
     }
 
-    public void addNote(String title, String content) {
-        Note note = new Note(title, content);
-        this.notes.add(note);
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
     }
 }
