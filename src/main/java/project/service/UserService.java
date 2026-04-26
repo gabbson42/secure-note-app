@@ -12,7 +12,7 @@ public class UserService {
     }
 
     public boolean editNote(String newTitle, String newNoteContent, int noteId) {
-        return repository.saveEditedNote(newTitle,newNoteContent, noteId);
+        return repository.saveEditedNote(newTitle, newNoteContent, noteId);
     }
 
     public boolean deleteNote(int noteId) {

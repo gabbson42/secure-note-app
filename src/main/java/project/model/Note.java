@@ -6,13 +6,13 @@ public class Note {
     private String title;
     private String content;
 
-    public Note (String title, String content, int id) {
+    public Note(String title, String content, int id) {
         this.title = title;
         this.content = content;
         this.id = id;
     }
 
-    public Note (String title, String content) {
+    public Note(String title, String content) {
         this.title = title;
         this.content = content;
     }

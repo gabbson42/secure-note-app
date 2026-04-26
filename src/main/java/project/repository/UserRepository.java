@@ -103,7 +103,7 @@ public class UserRepository {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
 
     }
@@ -189,9 +189,9 @@ public class UserRepository {
         String sql = "SELECT * FROM users";
 
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet result = statement.executeQuery()) {
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
+            ResultSet result = statement.executeQuery();
             List<User> userList = new ArrayList<>();
 
             while (result.next()) {

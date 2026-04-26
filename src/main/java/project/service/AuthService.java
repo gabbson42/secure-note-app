@@ -9,28 +9,10 @@ public class AuthService {
     private final UserRepository repository = new UserRepository();
 
     public boolean register(String username, String password) {
-        if (username == null || username.isBlank()) {
-            IO.println("Username is empty");
-            return false;
-        }
-        if (password == null || password.isBlank()) {
-            IO.println("Password is empty");
-            return false;
-        }
-
         return repository.saveUser(username, hashPassword(password), "USER");
     }
 
     public User login(String username, String password) {
-        if (username == null || username.isBlank()) {
-            IO.println("Username is empty");
-            return null;
-        }
-        if (password == null || password.isBlank()) {
-            IO.println("Password is empty");
-            return null;
-        }
-
         if (repository.checkIfUserExists(username)) {
             User user = repository.getUser(username);
 

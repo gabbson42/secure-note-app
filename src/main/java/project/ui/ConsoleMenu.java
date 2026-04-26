@@ -48,6 +48,15 @@ public class ConsoleMenu {
         IO.println("Enter your password: ");
         String password = input.nextLine();
 
+        if (username == null || username.isBlank()) {
+            IO.println("Username is empty");
+            return;
+        }
+        if (password == null || password.isBlank()) {
+            IO.println("Password is empty");
+            return;
+        }
+
         boolean success = authService.register(username, password);
 
         if (success) {
@@ -63,6 +72,15 @@ public class ConsoleMenu {
 
         IO.println("Enter your password: ");
         String password = input.nextLine();
+
+        if (username == null || username.isBlank()) {
+            IO.println("Username is empty");
+            return;
+        }
+        if (password == null || password.isBlank()) {
+            IO.println("Password is empty");
+            return;
+        }
 
         currentUser = authService.login(username, password);
 
