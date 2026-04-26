@@ -148,7 +148,7 @@ public class UserRepository {
     }
 
     public boolean saveEditedNote(String title, String content, int noteId) {
-        String sql = "UPDATE notes SET title = ?, content = ? where id = ?";
+        String sql = "UPDATE notes SET title = ?, content = ? WHERE id = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -174,6 +174,65 @@ public class UserRepository {
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, noteId);
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<User> getAllUsersFromDb() {
+        String sql = "SELECT * FROM users";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet result = statement.executeQuery()) {
+
+            List<User> userList = new ArrayList<>();
+
+            while (result.next()) {
+                String userName = result.getString("username");
+                User tempUser = getUser(userName);
+                userList.add(tempUser);
+            }
+            return userList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, userId);
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean editUserRole(int userId, String newRole) {
+        String sql = "UPDATE users SET role = ? WHERE id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, newRole);
+            statement.setInt(2, userId);
 
             int rows = statement.executeUpdate();
 
