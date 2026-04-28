@@ -115,7 +115,10 @@ public class ConsoleMenu {
                     case "2" -> viewNotes(currentUser);
                     case "3" -> changePassword();
                     case "4" -> adminMenu();
-                    case "0" -> running = false;
+                    case "0" -> {
+                        currentUser = null;
+                        running = false;
+                    }
                     default -> IO.println("Invalid choice");
                 }
             }
